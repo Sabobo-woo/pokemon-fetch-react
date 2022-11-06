@@ -1,23 +1,39 @@
-import logo from './logo.svg';
 import './App.css';
+import { useState, useEffect } from 'react'
+import Pokemon from './Pokemon';
 
 function App() {
+
+  const [pokemon, setPokemon] = useState(null);
+  const [limit, setLimit] = useState(5);
+
+  const loadData = async () => {
+    const response = await fetch('https://pokeapi.co/api/v2/pokemon?offset=0&limit=' + limit);
+    const data = await response.json();
+    setPokemon(data);
+  }
+
+  const plusFive = () => {
+    setLimit(limit + 5);
+    console.log(limit)
+    loadData();
+  }
+
+  useEffect(() => {
+    loadData()
+  }, []);
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <button onClick={plusFive}>Five more!</button>
+      {
+        pokemon === null
+          ? <p>loading...</p>
+          : pokemon.results.map(pokelist => {
+            return <Pokemon pokelist={pokelist} />
+          })
+      }
     </div>
   );
 }
